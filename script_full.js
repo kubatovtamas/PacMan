@@ -1,21 +1,11 @@
-/**
- * Változók létrehozása.
- * N: tábla mérete (10x10);
- * blockSize: egy elem mérete;
- * shipPos: hajó pozíciója, (0,0)-ból indul;
- * gameArea: jQuery elem a járéktér tárolására
- * ship: jQuery elem a hajó tárolására
- */
 const N = 14
 const M = 20
 const blockSize = 800 / M
-const pacmanPos = {
-  x: 9,
-  y: 8
-}
-let gameArea
-let pacman
-
+const pacmanPos = { x: 9, y: 8 }
+const KEYLEFT = 'ArrowLeft'
+const KEYUP = 'ArrowUp'
+const KEYRIGHT = 'ArrowRight'
+const KEYDOWN = 'ArrowDown'
 const Map = [
   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
@@ -32,24 +22,9 @@ const Map = [
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
 ]
+let gameArea
+let pacman
 
-// Nyílbillentyűk
-const KEYLEFT = 'ArrowLeft'
-const KEYUP = 'ArrowUp'
-const KEYRIGHT = 'ArrowRight'
-const KEYDOWN = 'ArrowDown'
-
-/**
- * Jég generálása.
- * Végigmegyünk az N*N-es táblán,
- * alapvetően minden mező víz osztályba tarozik,
- * de egy randomgenerálás után, 50% eséllyel
- * jég osztálybeli lesz.
- * Beállítjuk a CSS tulajdonságokat,
- * minden egyes mező elhelyezkedése abszolút a
- * játéktérhez képest.
- * Végül hozzáfűzzük a játéktérhez.
- */
 function generateMap () {
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < M; j++) {
@@ -75,12 +50,6 @@ function generateMap () {
   }
 }
 
-/**
- * A hajót létrehozó, kirajzoló fv.
- * HTML image objektum.
- * Mérete megfelel egy mező méretének,
- * hozzáfűzzűk a játéktérhez.
- */
 function addPacman () {
   pacman = $('<img src="pognom.gif" id="pacman" />')
   pacman.css({
@@ -91,11 +60,6 @@ function addPacman () {
   pacman.appendTo(gameArea)
 }
 
-/**
- *  Eseménykezelő, amely a billentyű lenyomásakor
- *  zajlik le.
- *  Input paraméter az event objektum.
- */
 function movePacman (e) {
   const key = e.key
   const originalY = pacmanPos.y
@@ -116,17 +80,6 @@ function movePacman (e) {
       break
   }
 
-  // gameArea.find('.wall').each(function () {
-  //   if (
-  //     $(this).css('top') === pacman.css('top') &&
-  //     $(this).css('left') === pacman.css('left')
-  //   ) {
-  //     pacmanPos.x = originalX
-  //     pacmanPos.y = originalY
-  //     console.log('Each:' + pacmanPos.y + ' - ' + pacmanPos.x)
-  //   }
-  // })
-
   // Tartományok ellenőrzése
   if (Map[pacmanPos.y][pacmanPos.x] === 'wall') {
     console.log('WALL')
@@ -145,23 +98,11 @@ function movePacman (e) {
   }
 }
 
-/**
- * Animációért felelős függvény
- * Alapvetően az animate függvényt hívjuk meg,
- * beállítjuk, hogy mit animáljon (pacman)
- * hogyan (módosítsa a pozíciót)
- * és mennyi idő alatt (300 ms).
- * Végül pedig jön a callback függvény (az animáció végén hívandó fv.).
- * Esetünkben ez felelős azért, hogy amennyiben a hajó jégre ért, akkor
- * "törje azt fel", azaz a jég osztályt kell eltávolítani.
- * */
 function animatePacman () {
   pacman.animate({
     top: pacmanPos.y * blockSize,
     left: pacmanPos.x * blockSize
   }, 100, function () {
-    // alternatív változat:
-    // $('.ice').each(function(){
     // gameArea.find('.wall').each(function () {
     //   if (
     //     $(this).css('top') === pacman.css('top') &&
@@ -183,15 +124,6 @@ function animatePacman () {
   })
 }
 
-/**
- * Ez fut le akkor, amikor az oldal betöltődött.
- * A gameArea-t helyezi el a body-ba az appendTo
- * fv. segítségével.
- * Ezután a pacmant, a falakat, a szellemeket,
- * a powerupokat rajzoljuk ki
- * és definiálunk egy eseménykezelőt a bill.
- * lenyomásának figyelésére.
- */
 $(function () {
   gameArea = $('<div></div>')
   gameArea.appendTo('body')
@@ -200,6 +132,5 @@ $(function () {
   addPacman()
   animatePacman() // kell, hogy ne bal felül kezdjen az animacio
   generateMap()
-
   $(window).on('keydown', movePacman)
 })
