@@ -24,8 +24,8 @@ const Map = [
 ]
 let gameArea
 let pacman
-let direction
-// let dirs = ['right','right']
+let dir1 = 'right'
+let dir2 = 'up'
 
 function generateMap () {
   for (let i = 0; i < N; i++) {
@@ -66,21 +66,74 @@ function isWall (y, x) {
   return Map[y][x] === 'wall'
 }
 
+function changeDirection () {
+  if (dir1 !== dir2) {
+    switch (dir2) {
+      case 'down':
+        if (!isWall(pacmanPos.y + 1, pacmanPos.x)) {
+          dir1 = dir2
+          dir2 = ''
+        }
+        break
+      case 'up':
+        if (!isWall(pacmanPos.y - 1, pacmanPos.x)) {
+          dir1 = dir2
+          dir2 = ''
+        }
+        break
+      case 'right':
+        if (!isWall(pacmanPos.y, pacmanPos.x + 1)) {
+          dir1 = dir2
+          dir2 = ''
+        }
+        break
+      case 'left':
+        if (!isWall(pacmanPos.y, pacmanPos.x - 1)) {
+          dir1 = dir2
+          dir2 = ''
+        }
+        break
+    }
+  }
+}
+
 function setDirection (e) {
   const key = e.key
   switch (key) {
     case KEYDOWN:
-      direction = 'down'
+      if (isWall(pacmanPos.y + 1, pacmanPos.x)) {
+        dir2 = 'down'
+        break
+      }
+      dir1 = 'down'
       break
     case KEYUP:
-      direction = 'up'
+      if (isWall(pacmanPos.y - 1, pacmanPos.x)) {
+        dir2 = 'up'
+        break
+      }
+      dir1 = 'up'
       break
+      // direction = 'up'
+      // break
     case KEYRIGHT:
-      direction = 'right'
+      if (isWall(pacmanPos.y, pacmanPos.x + 1)) {
+        dir2 = 'right'
+        break
+      }
+      dir1 = 'right'
       break
+      // direction = 'right'
+      // break
     case KEYLEFT:
-      direction = 'left'
+      if (isWall(pacmanPos.y, pacmanPos.x - 1)) {
+        dir2 = 'left'
+        break
+      }
+      dir1 = 'left'
       break
+      // direction = 'left'
+      // break
   }
 }
 
@@ -88,7 +141,7 @@ function movePacman () {
   const originalY = pacmanPos.y
   const originalX = pacmanPos.x
 
-  switch (direction) {
+  switch (dir1) {
     case 'down':
       pacmanPos.y++
       break
@@ -164,8 +217,10 @@ $(function () {
   gameArea.attr('id', 'gamearea')
 
   addPacman()
-  animatePacman() // kell, hogy ne bal felül kezdjen az animacio
+  animatePacman()
   generateMap()
+
   setInterval(movePacman, 200) // timeout ms-onként lép
+  setInterval(changeDirection, 50)
   $(window).on('keydown', setDirection) // on keydown, állítunk directiont
 })
