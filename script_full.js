@@ -24,6 +24,7 @@ const Map = [
 ]
 let gameArea
 let pacman
+let direction
 
 function generateMap () {
   for (let i = 0; i < N; i++) {
@@ -60,29 +61,46 @@ function addPacman () {
   pacman.appendTo(gameArea)
 }
 
-function movePacman (e) {
+function setDirection (e) {
   const key = e.key
+  switch (key) {
+    case KEYDOWN:
+      direction = 'down'
+      break
+    case KEYUP:
+      direction = 'up'
+      break
+    case KEYRIGHT:
+      direction = 'right'
+      break
+    case KEYLEFT:
+      direction = 'left'
+      break
+  }
+}
+
+function movePacman (e) {
+  // const key = e.key
   const originalY = pacmanPos.y
   const originalX = pacmanPos.x
 
-  switch (key) {
-    case KEYDOWN:
+  switch (direction) {
+    case 'down':
       pacmanPos.y++
       break
-    case KEYUP:
+    case 'up':
       pacmanPos.y--
       break
-    case KEYRIGHT:
+    case 'right':
       pacmanPos.x++
       break
-    case KEYLEFT:
+    case 'left':
       pacmanPos.x--
       break
   }
 
   // Tartományok ellenőrzése
   if (Map[pacmanPos.y][pacmanPos.x] === 'wall') {
-    console.log('WALL')
     pacmanPos.x = originalX
     pacmanPos.y = originalY
   } else if (pacmanPos.x < 0) {
@@ -103,6 +121,7 @@ function animatePacman () {
     top: pacmanPos.y * blockSize,
     left: pacmanPos.x * blockSize
   }, 100, function () {
+    // setTimeout(movePacman(), 500)
     // gameArea.find('.wall').each(function () {
     //   if (
     //     $(this).css('top') === pacman.css('top') &&
@@ -132,5 +151,6 @@ $(function () {
   addPacman()
   animatePacman() // kell, hogy ne bal felül kezdjen az animacio
   generateMap()
-  $(window).on('keydown', movePacman)
+  setInterval(movePacman, 300)
+  $(window).on('keydown', setDirection)
 })
