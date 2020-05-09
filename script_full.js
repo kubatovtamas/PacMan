@@ -9,12 +9,29 @@
 const N = 14
 const M = 20
 const blockSize = 800 / M
-const shipPos = {
-  x: 0,
-  y: 0
+const pacmanPos = {
+  x: 9,
+  y: 8
 }
 let gameArea
-let ship
+let pacman
+
+const Map = [
+  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+  ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
+  ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
+  ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
+  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
+  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
+  ['normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal'],
+  ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
+  ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
+  ['wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall'],
+  ['wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall'],
+  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
+  ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
+  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
+]
 
 // Nyílbillentyűk
 const KEYLEFT = 'ArrowLeft'
@@ -33,15 +50,19 @@ const KEYDOWN = 'ArrowDown'
  * játéktérhez képest.
  * Végül hozzáfűzzük a játéktérhez.
  */
-function randomizeIce () {
+function generateMap () {
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < M; j++) {
       const block = $('<div></div>')
       block.addClass('normal')
-
-      if (Math.random() > 0.5) {
-        block.addClass('chest')
+      if (Map[i][j] === 'wall') {
+        block.addClass('wall')
+      } else if (Map[i][j] === 'powerup') {
+        block.addClass('powerup')
+      } else if (Map[i][j] === 'ghost') {
+        block.addClass('ghost')
       }
+
       block.css({
         width: blockSize,
         height: blockSize,
@@ -60,14 +81,14 @@ function randomizeIce () {
  * Mérete megfelel egy mező méretének,
  * hozzáfűzzűk a játéktérhez.
  */
-function addShip () {
-  ship = $('<img src="pognom.gif" id="ship" />')
-  ship.css({
+function addPacman () {
+  pacman = $('<img src="pognom.gif" id="pacman" />')
+  pacman.css({
     width: blockSize,
     height: blockSize
   })
 
-  ship.appendTo(gameArea)
+  pacman.appendTo(gameArea)
 }
 
 /**
@@ -75,37 +96,37 @@ function addShip () {
  *  zajlik le.
  *  Input paraméter az event objektum.
  */
-function moveShip (e) {
+function movePacman (e) {
   const key = e.key // lekérjük a lenyomott billentyűt
   /* A lenyomott bill. alapján beállítjuk a hajó
       új pozícióját, és az animációval odamegyünk.
      */
   switch (key) {
     case KEYDOWN:
-      shipPos.y++
+      pacmanPos.y++
       break
     case KEYUP:
-      shipPos.y--
+      pacmanPos.y--
       break
     case KEYRIGHT:
-      shipPos.x++
+      pacmanPos.x++
       break
     case KEYLEFT:
-      shipPos.x--
+      pacmanPos.x--
       break
   }
 
   // Tartományok ellenőrzése
-  if (shipPos.x < 0) {
-    shipPos.x = 0
-  } else if (shipPos.x > N - 1) {
-    shipPos.x = N - 1
-  } else if (shipPos.y < 0) {
-    shipPos.y = 0
-  } else if (shipPos.y > N - 1) {
-    shipPos.y = N - 1
+  if (pacmanPos.x < 0) {
+    pacmanPos.x = 0
+  } else if (pacmanPos.x > M - 1) {
+    pacmanPos.x = M - 1
+  } else if (pacmanPos.y < 0) {
+    pacmanPos.y = 0
+  } else if (pacmanPos.y > N - 1) {
+    pacmanPos.y = N - 1
   } else {
-    animateShip()
+    animatePacman()
   }
 }
 
@@ -119,17 +140,17 @@ function moveShip (e) {
  * Esetünkben ez felelős azért, hogy amennyiben a hajó jégre ért, akkor
  * "törje azt fel", azaz a jég osztályt kell eltávolítani.
  * */
-function animateShip () {
-  ship.animate({
-    top: shipPos.y * blockSize,
-    left: shipPos.x * blockSize
+function animatePacman () {
+  pacman.animate({
+    top: pacmanPos.y * blockSize,
+    left: pacmanPos.x * blockSize
   }, 100, function () {
     // alternatív változat:
     // $('.ice').each(function(){
     gameArea.find('.chest').each(function () {
       if (
-        $(this).css('top') === ship.css('top') &&
-        $(this).css('left') === ship.css('left')
+        $(this).css('top') === pacman.css('top') &&
+        $(this).css('left') === pacman.css('left')
       ) {
         if (Math.random() < 0.33) {
           $(this).removeClass('chest')
@@ -159,8 +180,9 @@ $(function () {
   gameArea.appendTo('body')
   gameArea.attr('id', 'gamearea')
 
-  addShip()
-  randomizeIce()
+  addPacman()
+  animatePacman()
+  generateMap()
 
-  $(window).on('keydown', moveShip)
+  $(window).on('keydown', movePacman)
 })

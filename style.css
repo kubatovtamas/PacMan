@@ -38,23 +38,23 @@ body {
     border: solid #666 1px;
 }
 
-.chest {
-    background: saddlebrown;
+.wall {
+    background: rgb(255, 90, 0);
 }
 
-.nothing {
-    background: darkgray;
+.ghost {
+    background: darkblue;
 }
 
-.monster {
-    background: forestgreen;
+.powerup {
+    background: darkred;
 }
 
-.loot {
-    background: yellow;
-}
+/*.loot {*/
+/*    background: yellow;*/
+/*}*/
 
-#ship {
+#pacman {
     z-index: 1;
     position: absolute;
 }
