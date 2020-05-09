@@ -97,10 +97,10 @@ function addPacman () {
  *  Input paraméter az event objektum.
  */
 function movePacman (e) {
-  const key = e.key // lekérjük a lenyomott billentyűt
-  /* A lenyomott bill. alapján beállítjuk a hajó
-      új pozícióját, és az animációval odamegyünk.
-     */
+  const key = e.key
+  const originalY = pacmanPos.y
+  const originalX = pacmanPos.x
+
   switch (key) {
     case KEYDOWN:
       pacmanPos.y++
@@ -116,8 +116,23 @@ function movePacman (e) {
       break
   }
 
+  // gameArea.find('.wall').each(function () {
+  //   if (
+  //     $(this).css('top') === pacman.css('top') &&
+  //     $(this).css('left') === pacman.css('left')
+  //   ) {
+  //     pacmanPos.x = originalX
+  //     pacmanPos.y = originalY
+  //     console.log('Each:' + pacmanPos.y + ' - ' + pacmanPos.x)
+  //   }
+  // })
+
   // Tartományok ellenőrzése
-  if (pacmanPos.x < 0) {
+  if (Map[pacmanPos.y][pacmanPos.x] === 'wall') {
+    console.log('WALL')
+    pacmanPos.x = originalX
+    pacmanPos.y = originalY
+  } else if (pacmanPos.x < 0) {
     pacmanPos.x = 0
   } else if (pacmanPos.x > M - 1) {
     pacmanPos.x = M - 1
@@ -133,7 +148,7 @@ function movePacman (e) {
 /**
  * Animációért felelős függvény
  * Alapvetően az animate függvényt hívjuk meg,
- * beállítjuk, hogy mit animáljon (hajó)
+ * beállítjuk, hogy mit animáljon (pacman)
  * hogyan (módosítsa a pozíciót)
  * és mennyi idő alatt (300 ms).
  * Végül pedig jön a callback függvény (az animáció végén hívandó fv.).
@@ -147,23 +162,24 @@ function animatePacman () {
   }, 100, function () {
     // alternatív változat:
     // $('.ice').each(function(){
-    gameArea.find('.chest').each(function () {
-      if (
-        $(this).css('top') === pacman.css('top') &&
-        $(this).css('left') === pacman.css('left')
-      ) {
-        if (Math.random() < 0.33) {
-          $(this).removeClass('chest')
-          $(this).addClass('nothing')
-        } else if (Math.random() < 0.66) {
-          $(this).removeClass('chest')
-          $(this).addClass('monster')
-        } else {
-          $(this).removeClass('chest')
-          $(this).addClass('loot')
-        }
-      }
-    })
+    // gameArea.find('.wall').each(function () {
+    //   if (
+    //     $(this).css('top') === pacman.css('top') &&
+    //     $(this).css('left') === pacman.css('left')
+    //   ) {
+    //     console.log('ide nem kene lepni')
+    //     if (Math.random() < 0.33) {
+    //       $(this).removeClass('chest')
+    //       $(this).addClass('nothing')
+    //     } else if (Math.random() < 0.66) {
+    //       $(this).removeClass('chest')
+    //       $(this).addClass('monster')
+    //     } else {
+    //       $(this).removeClass('chest')
+    //       $(this).addClass('loot')
+    //     }
+    //   }
+    // })
   })
 }
 
@@ -171,7 +187,8 @@ function animatePacman () {
  * Ez fut le akkor, amikor az oldal betöltődött.
  * A gameArea-t helyezi el a body-ba az appendTo
  * fv. segítségével.
- * Ezután a hajót és a jeget rajzoljuk ki,
+ * Ezután a pacmant, a falakat, a szellemeket,
+ * a powerupokat rajzoljuk ki
  * és definiálunk egy eseménykezelőt a bill.
  * lenyomásának figyelésére.
  */
@@ -181,7 +198,7 @@ $(function () {
   gameArea.attr('id', 'gamearea')
 
   addPacman()
-  animatePacman()
+  animatePacman() // kell, hogy ne bal felül kezdjen az animacio
   generateMap()
 
   $(window).on('keydown', movePacman)

@@ -8,5 +8,5 @@
     // make pacman start from[9,8]
     // make ghost css + idx
     // make door css + idx
-3. make controls loop
-4. edge detection
+// 3. edge detection
+4. make controls loop
