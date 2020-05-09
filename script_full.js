@@ -24,9 +24,12 @@ const Map = [
 ]
 let gameArea
 let pacman
-let dir1 = 'right'
-let dir2 = 'up'
+let dir1 = ''
+let dir2 = ''
 
+/**
+ * Generates the map for the gamearea
+ */
 function generateMap () {
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < M; j++) {
@@ -52,6 +55,9 @@ function generateMap () {
   }
 }
 
+/**
+ * Add the player model to the gamearea
+ */
 function addPacman () {
   pacman = $('<img src="pognom.gif" id="pacman" />')
   pacman.css({
@@ -62,10 +68,23 @@ function addPacman () {
   pacman.appendTo(gameArea)
 }
 
+/**
+ * Check if Map[y][x] is wall
+ * @param y
+ * @param x
+ * @returns {boolean}
+ */
 function isWall (y, x) {
   return Map[y][x] === 'wall'
 }
 
+/**
+ * Supposed to be called in intervals!
+ * Checks if dir1 and dir2 is equal.
+ * If not check if moving in dir2 is valid.
+ * If it is, then set dir1 to the value of dir2,
+ * and set dir2 to empty string.
+ */
 function changeDirection () {
   if (dir1 !== dir2) {
     switch (dir2) {
@@ -97,6 +116,16 @@ function changeDirection () {
   }
 }
 
+/**
+ * Takes a Keypress event.
+ * If Keypress is KEYDOWN/KEYUP/KEYRIGHT/KEYLEFT:
+ *  If Keypress direction is valid move:
+ *    set dir1 to Keypress
+ *  Else:
+ *    set dir2 to Keypress
+ *
+ * @param e event
+ */
 function setDirection (e) {
   const key = e.key
   switch (key) {
@@ -114,8 +143,6 @@ function setDirection (e) {
       }
       dir1 = 'up'
       break
-      // direction = 'up'
-      // break
     case KEYRIGHT:
       if (isWall(pacmanPos.y, pacmanPos.x + 1)) {
         dir2 = 'right'
@@ -123,8 +150,6 @@ function setDirection (e) {
       }
       dir1 = 'right'
       break
-      // direction = 'right'
-      // break
     case KEYLEFT:
       if (isWall(pacmanPos.y, pacmanPos.x - 1)) {
         dir2 = 'left'
@@ -132,11 +157,18 @@ function setDirection (e) {
       }
       dir1 = 'left'
       break
-      // direction = 'left'
-      // break
   }
 }
 
+/**
+ * Supposed to be called in intervals!
+ * Tries to move the player
+ * depending on the state of
+ * dir1 variable.
+ *
+ * Rule checks for valid steps
+ * are implemented here.
+ */
 function movePacman () {
   const originalY = pacmanPos.y
   const originalX = pacmanPos.x
@@ -156,27 +188,31 @@ function movePacman () {
       break
   }
 
-  // Tartományok ellenőrzése
-  if (pacmanPos.x < 0) {
+  // Boundary checks
+  if (pacmanPos.x < 0) { // Out of Bounds: Left
     pacmanPos.x = M - 1
     teleportPacman()
-  } else if (pacmanPos.x > M - 1) {
+  } else if (pacmanPos.x > M - 1) { // Out of Bounds: Right
     pacmanPos.x = 0
     teleportPacman()
-  } else if (pacmanPos.y < 0) {
+  } else if (pacmanPos.y < 0) { // Out of Bounds: Up
     pacmanPos.y = N - 1
     teleportPacman()
-  } else if (pacmanPos.y > N - 1) {
+  } else if (pacmanPos.y > N - 1) { // Out of Bounds: Down
     pacmanPos.y = 0
     teleportPacman()
-  } else if (isWall(pacmanPos.y, pacmanPos.x)) {
+  } else if (isWall(pacmanPos.y, pacmanPos.x)) { // Wall hit
     pacmanPos.x = originalX
     pacmanPos.y = originalY
-  } else {
+  } else { // Move
     animatePacman()
   }
 }
 
+/**
+ * Same as animatePacman
+ * but much faster
+ */
 function teleportPacman () {
   pacman.animate({
     top: pacmanPos.y * blockSize,
@@ -185,6 +221,10 @@ function teleportPacman () {
   )
 }
 
+/**
+ * Render the moving of the player
+ * to the gamearea.
+ */
 function animatePacman () {
   pacman.animate({
     top: pacmanPos.y * blockSize,
@@ -211,6 +251,9 @@ function animatePacman () {
   })
 }
 
+/**
+ * Main driver
+ */
 $(function () {
   gameArea = $('<div></div>')
   gameArea.appendTo('body')
@@ -220,7 +263,7 @@ $(function () {
   animatePacman()
   generateMap()
 
-  setInterval(movePacman, 200) // timeout ms-onként lép
-  setInterval(changeDirection, 50)
-  $(window).on('keydown', setDirection) // on keydown, állítunk directiont
+  setInterval(movePacman, 200) // for every 'timeout' ms, move
+  setInterval(changeDirection, 50) // for every 'timeout' ms, check  if changing direction is valid
+  $(window).on('keydown', setDirection) // on keydown, call setDirection
 })

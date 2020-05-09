@@ -10,4 +10,4 @@
     // make door css + idx
 // 3. edge detection
 // 4. make tunnels work
-4. make controls loop
+// 4. make controls loop
