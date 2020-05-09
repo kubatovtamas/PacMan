@@ -7,25 +7,26 @@ const KEYUP = 'ArrowUp'
 const KEYRIGHT = 'ArrowRight'
 const KEYDOWN = 'ArrowDown'
 const Map = [
-  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
+  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall'],
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
-  ['normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal'],
+  ['nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'nothing'],
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
-  ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
+  ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'nothing', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
-  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
+  ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
 ]
 let gameArea
 let pacman
 let dir1 = ''
 let dir2 = ''
+let score = -1
 
 /**
  * Generates the map for the gamearea
@@ -41,6 +42,8 @@ function generateMap () {
         block.addClass('powerup')
       } else if (Map[i][j] === 'ghost') {
         block.addClass('ghost')
+      } else if (Map[i][j] === 'nothing') {
+        block.addClass('nothing')
       }
 
       block.css({
@@ -60,6 +63,7 @@ function generateMap () {
  */
 function addPacman () {
   pacman = $('<img src="pognom.gif" id="pacman" />')
+  // pacman = $('<img src="juli.png" id="pacman" />')
   pacman.css({
     width: blockSize,
     height: blockSize
@@ -229,25 +233,19 @@ function animatePacman () {
   pacman.animate({
     top: pacmanPos.y * blockSize,
     left: pacmanPos.x * blockSize
-  }, 150, function () {
-    // gameArea.find('.wall').each(function () {
-    //   if (
-    //     $(this).css('top') === pacman.css('top') &&
-    //     $(this).css('left') === pacman.css('left')
-    //   ) {
-    //     console.log('ide nem kene lepni')
-    //     if (Math.random() < 0.33) {
-    //       $(this).removeClass('chest')
-    //       $(this).addClass('nothing')
-    //     } else if (Math.random() < 0.66) {
-    //       $(this).removeClass('chest')
-    //       $(this).addClass('monster')
-    //     } else {
-    //       $(this).removeClass('chest')
-    //       $(this).addClass('loot')
-    //     }
-    //   }
-    // })
+  }, 200, function () {
+    gameArea.find('.normal').each(function () {
+      if (
+        $(this).css('top') === pacman.css('top') &&
+        $(this).css('left') === pacman.css('left')
+      ) {
+        score++
+        console.log('score: ' + score)
+        $(this).removeClass('normal')
+        $(this).removeClass('powerup')
+        $(this).addClass('nothing')
+      }
+    })
   })
 }
 
@@ -260,7 +258,7 @@ $(function () {
   gameArea.attr('id', 'gamearea')
 
   addPacman()
-  animatePacman()
+  teleportPacman()
   generateMap()
 
   setInterval(movePacman, 200) // for every 'timeout' ms, move

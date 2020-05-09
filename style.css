@@ -1,16 +1,9 @@
-/* Margó és padding 0, fekete háttér*/
 body {
     margin: 0;
     padding: 0;
     background: black;
 }
 
-/*  Játékterület pont középen legyen.
-    Mivel a top és a left 50%, így a játéktér bal
-    felső sarka pont középen lenne.
-    Ebből vonjuk le a szélesség és magasság felét,
-    így a középpont lesz az oldal közepén.
- */
 #gamearea {
     position: absolute;
     top: 50%;
@@ -22,37 +15,37 @@ body {
     border: none;
 }
 
-/*  Víz beállítása, szín, elhelyezkedés, szegély.
-    z-index: azt állítjuk be, hogy egymáson lévő
-    elemek közül melyik hol legyen. Minél nagyobb,
-    annál előrébb van az elem.
-    Csak akkor működik, ha az elem pozícionált.
-    (position:absolute, position:relative, or position:fixed)
-    Absolute esetén kikerül a megjelenés folyamából, megadhatunk neki
-    különféle elhelyezkedési értékeket, méretet.
- */
 .normal {
-    background: white;
+    background: lightgrey;
     position: absolute;
     z-index: 0;
     border: solid #666 1px;
+    background-image: url(pill.png);
+    background-repeat: no-repeat;
+    background-position:center
+}
+
+.nothing {
+    background: lightgrey;
+    position: absolute;
+    z-index: 0;
+    border: solid #666 1px;
+    background-image: none;
 }
 
 .wall {
-    background: rgb(255, 90, 0);
+    background: black;
 }
 
 .ghost {
-    background: darkblue;
+    /*background: darkblue;*/
+    background-image: url(juli.png);
 }
 
 .powerup {
-    background: darkred;
+    /*background: darkred;*/
+    background-image: url("hotdeal.png");
 }
-
-/*.loot {*/
-/*    background: yellow;*/
-/*}*/
 
 #pacman {
     z-index: 1;

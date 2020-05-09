@@ -1,3 +1,4 @@
+DJ Isaac bitches
 // 1. make the game area 20 x 14
 // 2. draw the sketch of the game area
     // remove random ice generator
@@ -11,3 +12,35 @@
 // 3. edge detection
 // 4. make tunnels work
 // 4. make controls loop
+
+//5.// add sprite for food
+    // add sprite for powerup
+    // add spirte for ghosts
+    // change map array accordingly
+
+//6  Pickup detection:
+    //on step: remove class (make it disappear)
+//7  count score
+display score
+
+
+
+
+
+
+  win condition:
+        number of .food in gameare == 0
+
+8.  have lives
+9.  create random moving ghosts
+10. if collision with ghost:
+        reset postion
+        life--
+11. make panic mode:
+        change behaviour of collision detection: reverse
+12. make scoring system
+13. print out the score
+14. have a highscore list
+15. background music
+16. make pog turn around/mirror
+
