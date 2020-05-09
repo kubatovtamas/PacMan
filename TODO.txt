@@ -1,0 +1,4 @@
+// 1. make the game area 20 x 14
+2. draw the sketch of the game area
+3. make controls loop
+4. edge detection

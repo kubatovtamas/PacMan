@@ -6,9 +6,13 @@
  * gameArea: jQuery elem a járéktér tárolására
  * ship: jQuery elem a hajó tárolására
  */
-const N = 12
-const blockSize = 500 / N
-const shipPos = { x: 0, y: 0 }
+const N = 14
+const M = 20
+const blockSize = 800 / M
+const shipPos = {
+  x: 0,
+  y: 0
+}
 let gameArea
 let ship
 
@@ -31,7 +35,7 @@ const KEYDOWN = 'ArrowDown'
  */
 function randomizeIce () {
   for (let i = 0; i < N; i++) {
-    for (let j = 0; j < N; j++) {
+    for (let j = 0; j < M; j++) {
       const block = $('<div></div>')
       block.addClass('normal')
 
