@@ -32,9 +32,13 @@ DJ Isaac bitches
 //1.  display main menu
 //    display controls
 //2.  have a play button (start audio) -> P
+
+
+
+
+
 3.  actually have audio
 4.  win condition: 131 points
-
 6. win condition: no more food: stop intervals update topscore
 7. ghost movement: move, if stuck, random direction, move ...
 8. on collision: lives--, everything reset position

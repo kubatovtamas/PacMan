@@ -75,7 +75,6 @@ function generateMap () {
  */
 function addPacman () {
   pacman = $('<img src="pognom.gif" id="pacman" />')
-  // pacman = $('<img src="juli.png" id="pacman" />')
   pacman.css({
     width: blockSize,
     height: blockSize
@@ -320,17 +319,24 @@ function showMain () {
   }
 }
 
+function resetPacman () {
+  pacmanPos.y = 8
+  pacmanPos.x = 9
+}
+
 /**
  * resets the game
  */
 function reset () {
-  console.log('RESET')
+  $('body').empty()
+  resetPacman()
+  main()
 }
 
 /**
  * Main driver
  */
-$(function () {
+function main () {
   // Set up gameArea and scoreArea jQuery elements
   mainMenu = $('<div><h1>MAIN MENU</h1><h2>CONTROLS: ARROW KEYS</h2><h2>M: MAIN</h2><h2>R: RESET</h2><h2>PRESS P TO PLAY</h2></div>')
   gameArea = $('<div></div>')
@@ -339,7 +345,6 @@ $(function () {
   // Add mainMenu to body
   mainMenu.appendTo('body')
   mainMenu.attr('id', 'mainMenu')
-  // mainMenu.addClass('visible')
   mainMenu.find(':header').addClass('text')
 
   // Init functions
@@ -383,4 +388,11 @@ $(function () {
 
   // Keydown listener
   $(window).on('keydown', setDirection) // on keydown, call setDirection
+}
+
+/**
+ * Calls main if document is ready
+ */
+$(function () {
+  main()
 })
