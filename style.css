@@ -11,7 +11,7 @@ body {
     background: black;
 }
 
-#mainMenu {
+#mainMenu, #highScores {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -66,6 +66,16 @@ body {
     position: absolute;
 }
 
+#topScore {
+    cursor: pointer;
+}
+
+ul {
+    list-style-type: none; /* Remove bullets */
+    padding: 0; /* Remove padding */
+    margin: 0; /* Remove margins */
+}
+
 .nothing {
     background: lightgrey;
     position: absolute;
@@ -83,10 +93,6 @@ body {
 .wall {
     background: black;
 }
-
-/*.ghost {*/
-/*    background-image: url(boomer.gif);*/
-/*}*/
 
 .powerup {
     background-image: url("hotdeal.png");

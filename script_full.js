@@ -48,6 +48,7 @@ let score = 0
 const winningScore = 131
 
 let mainMenu
+let highScores
 let gameArea
 let scoreArea
 let currentScore
@@ -64,9 +65,9 @@ let movePacmanInterval
 let changeDirectionInterval
 let updateInterval
 let timerInterval
-let song
-
 let moveGInterval
+
+let song
 // #############################################################################
 
 /**
@@ -244,15 +245,19 @@ function checkCollision () {
 function checkCollisionPanic () {
   gameArea.find('.ghost').each(function () {
     if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
+      score++
       playHit()
       resetG1()
     } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
+      score++
       playHit()
       resetG2()
     } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
+      score++
       playHit()
       resetG3()
     } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
+      score++
       playHit()
       resetG4()
     }
@@ -371,7 +376,6 @@ function setPanicMode () {
   const counter = setInterval(timer, 1000)
   function timer () {
     panicCount--
-    console.log('panic: ' + panicCount)
     if (panicCount <= 0) {
       if (checkWin === true) {
         showWin()
@@ -686,8 +690,6 @@ function moveAllGhosts () {
 // #############################################################################
 
 function checkWin () {
-  // console.log('score:' + score)
-  // console.log('winning: ' + winningScore)
   return score >= winningScore
 }
 
@@ -699,6 +701,7 @@ function showWin () {
   clearInterval(timerInterval)
   clearInterval(updateInterval)
   clearInterval(moveGInterval)
+  storage()
 }
 
 function showLose () {
@@ -710,6 +713,7 @@ function showLose () {
   clearInterval(timerInterval)
   clearInterval(updateInterval)
   clearInterval(moveGInterval)
+  storage()
 }
 
 /**
@@ -717,7 +721,6 @@ function showLose () {
  * Handles localStorage calling for top score
  */
 function update () {
-  storage()
   if (checkWin()) {
     showWin()
   }
@@ -735,12 +738,28 @@ function storage () {
   if (typeof (Storage) !== 'undefined') {
     if (localStorage.getItem('topScore')) {
       if (Number(localStorage.getItem('topScore')) < score) {
+        const name = prompt('New High Score!', 'Player name?')
         localStorage.setItem('topScore', Number(score))
+        localStorage.setItem(name, Number(score))
+        fillToplist()
       }
     } else {
       localStorage.setItem('topScore', Number(0))
     }
   }
+}
+
+function fillToplist () {
+  // vegigmegyunk a localStorage mentett elemein es egy uj tombbe pakoljuk. asszociativ tomb
+  const data = []
+  for (let i = 0; i < localStorage.length; i++) {
+    data[i] = [localStorage.key(i), parseInt(localStorage.getItem(localStorage.key(i)))]
+  }
+  // csokkeno sorrendbe rendezzuk az elemeket az elert pontszam alapjan
+  data.sort(function (a, b) {
+    return b[1] - a[1]
+  })
+  return data
 }
 
 // #############################################################################
@@ -750,9 +769,26 @@ function storage () {
  */
 function showPlay () {
   if ($('#mainMenu').css('z-index') === '100') {
+    // set mainmenu and highscores z index to hide
+    if ($('#highScores').css('z-index') === '100') {
+      $('#highScores').css('z-index', 0)
+    }
+    $('#mainMenu').css('z-index', 0)
+
+    // init topScore to 0 if null
+    if (localStorage.getItem('topScore') === null) {
+      localStorage.setItem('topScore', 0)
+    }
+    // start ghost mover interval
     moveGInterval = setInterval(moveAllGhosts, 100)
 
-    $('#mainMenu').css('z-index', 0)
+    $('#topScore').on('click', function () {
+      $('#highScores').css('z-index', 100)
+      const players = fillToplist()
+      for (let i = 1; i < players.length; i++) {
+        $('#highScores ul').append('<li>' + players[i] + '</li>')
+      }
+    })
 
     song = new Audio('song.mp3')
     song.volume = 0.5
@@ -763,16 +799,6 @@ function showPlay () {
     song.play()
   }
 }
-
-/**
- * From play -> main
- */
-// function showMain () {
-//   if ($('#mainMenu').css('z-index') === '0') {
-//     $('#mainMenu').css('z-index', 100)
-//     console.log('goto main')
-//   }
-// }
 
 /**
  * resets the game
@@ -855,11 +881,14 @@ function playPowerup () {
 function main () {
   // Set up gameArea and scoreArea jQuery elements
   mainMenu = $('<div><h1>MAIN MENU</h1><h2>CONTROLS: ARROW KEYS</h2><h2>R: RESET</h2><h2>PRESS P TO PLAY</h2></div>')
+  highScores = $('<div><h1>HIGH SCORES</h1><h2>PRESS R TO GO BACK</h2><ul></ul></div>')
   gameArea = $('<div></div>')
   scoreArea = $('<div></div>')
 
-  // Add mainMenu to body
+  // Add mainMenu and highScores to body
+  highScores.appendTo('body')
   mainMenu.appendTo('body')
+  highScores.attr('id', 'highScores')
   mainMenu.attr('id', 'mainMenu')
   mainMenu.find(':header').addClass('text')
 
@@ -900,7 +929,7 @@ function main () {
   // Interval functions
   movePacmanInterval = setInterval(movePacman, 200) // for every 'timeout' ms, move
   changeDirectionInterval = setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
-  updateInterval = setInterval(update, 10)
+  updateInterval = setInterval(update, 500)
   timerInterval = setInterval(function () { seconds++ }, 1000)
 
   // Keydown listener
