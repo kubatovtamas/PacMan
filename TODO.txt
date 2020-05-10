@@ -37,14 +37,20 @@ DJ Isaac bitches
 
 
 
-3.  actually have audio
-4.  win condition: 131 points
-6. win condition: no more food: stop intervals update topscore
-7. ghost movement: move, if stuck, random direction, move ...
-8. on collision: lives--, everything reset position
-9. panic mode: on collision reverse, ghosts killed for 5 sec, score: killing gives points
-10. add bg music
 
+
+1.  win condition:
+        //test: win cond: 10 score
+            //replace pac and ghost with peepoclap
+            //stop intervals
+        production: 131 score
+2.  ghost movement: move, if stuck, random direction, move ...
+3.  on collision:
+        //lives--,
+        //pacman reset
+        ghosts reset position
+4.  panic mode: on collision reverse, ghosts killed for 5 sec, score: killing gives points
+5.  actually have audio: background music
 
 +1 cosmetic: mirroring
 

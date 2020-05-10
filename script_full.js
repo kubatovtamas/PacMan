@@ -12,8 +12,8 @@ const Map = [
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
-  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'nothing', /* 'ghost', 'ghost', */'nothing', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
-  ['nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'nothing', /* 'ghost', 'ghost', */'nothing', 'nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'nothing'],
+  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'nothing', 'nothing', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
+  ['nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'nothing', 'nothing', 'nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'nothing'],
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'nothing', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall'],
@@ -24,18 +24,27 @@ const Map = [
 ]
 
 let pacman
+
 let g1
 const g1Pos = { x: 9, y: 5 }
+// let g1Dir
+
 let g2
 const g2Pos = { x: 10, y: 5 }
+// let g2Dir
+
 let g3
 const g3Pos = { x: 9, y: 6 }
+// let g3Dir
+
 let g4
 const g4Pos = { x: 10, y: 6 }
+// let g4Dir
 
 let dir1 = ''
 let dir2 = ''
 let score = 0
+const winningScore = 50
 
 let mainMenu
 let gameArea
@@ -45,9 +54,14 @@ let topScore
 let lifeScore
 let timer
 
-const lives = 3
+let lives = 3
 let seconds = 0
 
+let movePacmanInterval
+let animateAllGhostsInterval
+let changeDirectionInterval
+let updateInterval
+let timerInterval
 // #############################################################################
 
 /**
@@ -185,13 +199,17 @@ function setDirection (e) {
 function checkCollision () {
   gameArea.find('.ghost').each(function () {
     if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
-      console.log('HIT')
+      lives--
+      resetPacman()
     } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
-      console.log('HIT')
+      lives--
+      resetPacman()
     } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
-      console.log('HIT')
+      lives--
+      resetPacman()
     } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
-      console.log('HIT')
+      lives--
+      resetPacman()
     }
   })
 }
@@ -397,12 +415,33 @@ function teleportPacman () {
 
 // #############################################################################
 
+function checkWin () {
+  return score >= winningScore
+}
+
+function showWin () {
+  console.log('WIN')
+  pacman.attr('src', 'clap.gif')
+  g1.attr('src', 'clap.gif')
+  g2.attr('src', 'clap.gif')
+  g3.attr('src', 'clap.gif')
+  g4.attr('src', 'clap.gif')
+  clearInterval(movePacmanInterval)
+  clearInterval(animateAllGhostsInterval)
+  clearInterval(changeDirectionInterval)
+  clearInterval(timerInterval)
+  clearInterval(updateInterval)
+}
+
 /**
  * Updates the current score, timer, top score, and lives fields.
  * Handles localStorage calling for top score
  */
 function update () {
   storage()
+  if (checkWin()) {
+    showWin()
+  }
   $('#currentScore').text('score: ' + score)
   $('#timer').text('Time: ' + seconds)
   $('#topScore').text('TOP: ' + localStorage.getItem('topScore'))
@@ -424,14 +463,6 @@ function storage () {
     }
   }
 }
-
-/**
- * Reset pacman position
- */
-// function resetPacman () {
-//   pacmanPos.y = 8
-//   pacmanPos.x = 9
-// }
 
 // #############################################################################
 
@@ -460,6 +491,15 @@ function showMain () {
  */
 function reset () {
   location.reload()
+}
+
+/**
+ * Reset pacman position
+ */
+function resetPacman () {
+  pacmanPos.y = 8
+  pacmanPos.x = 9
+  teleportPacman()
 }
 
 // #############################################################################
@@ -514,11 +554,11 @@ function main () {
   timer.attr('id', 'timer')
 
   // Interval functions
-  setInterval(movePacman, 200) // for every 'timeout' ms, move
-  setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
-  setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
-  setInterval(update, 10)
-  setInterval(function () { seconds++ }, 1000)
+  movePacmanInterval = setInterval(movePacman, 200) // for every 'timeout' ms, move
+  animateAllGhostsInterval = setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
+  changeDirectionInterval = setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
+  updateInterval = setInterval(update, 10)
+  timerInterval = setInterval(function () { seconds++ }, 1000)
 
   // Keydown listener
   $(window).on('keydown', setDirection) // on keydown, call setDirection
