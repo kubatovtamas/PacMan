@@ -48,6 +48,8 @@ let timer
 const lives = 3
 let seconds = 0
 
+// #############################################################################
+
 /**
  * Generates the map for the gamearea
  */
@@ -180,6 +182,22 @@ function setDirection (e) {
   }
 }
 
+function checkCollision () {
+  gameArea.find('.ghost').each(function () {
+    if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
+      console.log('HIT')
+    } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
+      console.log('HIT')
+    } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
+      console.log('HIT')
+    } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
+      console.log('HIT')
+    }
+  })
+}
+
+// #############################################################################
+
 /**
  * Add the player model to the gamearea
  */
@@ -199,7 +217,7 @@ function addG1 () {
     width: blockSize,
     height: blockSize
   })
-
+  g1.addClass('ghost')
   g1.appendTo(gameArea)
 }
 
@@ -209,7 +227,7 @@ function addG2 () {
     width: blockSize,
     height: blockSize
   })
-
+  g2.addClass('ghost')
   g2.appendTo(gameArea)
 }
 
@@ -219,7 +237,7 @@ function addG3 () {
     width: blockSize,
     height: blockSize
   })
-
+  g3.addClass('ghost')
   g3.appendTo(gameArea)
 }
 
@@ -229,7 +247,7 @@ function addG4 () {
     width: blockSize,
     height: blockSize
   })
-
+  g4.addClass('ghost')
   g4.appendTo(gameArea)
 }
 
@@ -247,6 +265,8 @@ function addEverything () {
   addPacman()
   addAllGhosts()
 }
+
+// #############################################################################
 
 /**
  * Render the moving of the player
@@ -310,7 +330,10 @@ function animateAllGhosts () {
   animateg2()
   animateg3()
   animateg4()
+  checkCollision()
 }
+
+// #############################################################################
 
 /**
  * Supposed to be called in intervals!
@@ -324,7 +347,7 @@ function animateAllGhosts () {
 function movePacman () {
   const originalY = pacmanPos.y
   const originalX = pacmanPos.x
-
+  console.log(dir1)
   switch (dir1) {
     case 'down':
       pacmanPos.y++
@@ -372,6 +395,8 @@ function teleportPacman () {
   )
 }
 
+// #############################################################################
+
 /**
  * Updates the current score, timer, top score, and lives fields.
  * Handles localStorage calling for top score
@@ -401,6 +426,16 @@ function storage () {
 }
 
 /**
+ * Reset pacman position
+ */
+// function resetPacman () {
+//   pacmanPos.y = 8
+//   pacmanPos.x = 9
+// }
+
+// #############################################################################
+
+/**
  * From main -> play
  */
 function showPlay () {
@@ -421,21 +456,13 @@ function showMain () {
 }
 
 /**
- * Reset pacman position
- */
-function resetPacman () {
-  pacmanPos.y = 8
-  pacmanPos.x = 9
-}
-
-/**
  * resets the game
  */
 function reset () {
-  $('body').empty()
-  resetPacman()
-  main()
+  location.reload()
 }
+
+// #############################################################################
 
 /**
  * Main driver
@@ -489,7 +516,7 @@ function main () {
   // Interval functions
   setInterval(movePacman, 200) // for every 'timeout' ms, move
   setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
-  setInterval(changeDirection, 50) // for every 'timeout' ms, check  if changing direction is valid
+  setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
   setInterval(update, 10)
   setInterval(function () { seconds++ }, 1000)
 
