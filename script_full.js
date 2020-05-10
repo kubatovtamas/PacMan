@@ -22,24 +22,25 @@ const Map = [
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
 ]
+const dirs = ['left', 'up', 'right', 'down']
 
 let pacman
 
 let g1
 const g1Pos = { x: 9, y: 5 }
-// let g1Dir
+let g1Dir = 'down'
 
 let g2
 const g2Pos = { x: 10, y: 5 }
-// let g2Dir
+let g2Dir = 'down'
 
 let g3
 const g3Pos = { x: 9, y: 6 }
-// let g3Dir
+let g3Dir = 'right'
 
 let g4
 const g4Pos = { x: 10, y: 6 }
-// let g4Dir
+let g4Dir = 'right'
 
 let dir1 = ''
 let dir2 = ''
@@ -62,6 +63,8 @@ let animateAllGhostsInterval
 let changeDirectionInterval
 let updateInterval
 let timerInterval
+
+let moveGInterval
 // #############################################################################
 
 /**
@@ -201,15 +204,19 @@ function checkCollision () {
     if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
       lives--
       resetPacman()
+      resetGhosts()
     } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
       lives--
       resetPacman()
+      resetGhosts()
     } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
       lives--
       resetPacman()
+      resetGhosts()
     } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
       lives--
       resetPacman()
+      resetGhosts()
     }
   })
 }
@@ -312,43 +319,85 @@ function animatePacman () {
   })
 }
 
-function animateg1 () {
+/**
+ * animatePacman but much faster
+ */
+function teleportPacman () {
+  pacman.animate({
+    top: pacmanPos.y * blockSize,
+    left: pacmanPos.x * blockSize
+  }, 0
+  )
+}
+
+function animateG1 () {
   g1.animate({
     top: g1Pos.y * blockSize,
     left: g1Pos.x * blockSize
-  }, 0)
+  }, 200)
 }
 
-function animateg2 () {
+function animateG2 () {
   g2.animate({
     top: g2Pos.y * blockSize,
     left: g2Pos.x * blockSize
-  }, 0)
+  }, 200)
 }
 
-function animateg3 () {
+function animateG3 () {
   g3.animate({
     top: g3Pos.y * blockSize,
     left: g3Pos.x * blockSize
-  }, 0)
+  }, 200)
 }
 
-function animateg4 () {
+function animateG4 () {
   g4.animate({
     top: g4Pos.y * blockSize,
     left: g4Pos.x * blockSize
-  }, 0)
+  }, 200)
+}
+
+function teleportG1 () {
+  g1.animate({
+    top: g1.y * blockSize,
+    left: g1.x * blockSize
+  }, 0
+  )
+}
+
+function teleportG2 () {
+  g2.animate({
+    top: g2.y * blockSize,
+    left: g2.x * blockSize
+  }, 0
+  )
+}
+
+function teleportG3 () {
+  g3.animate({
+    top: g3.y * blockSize,
+    left: g3.x * blockSize
+  }, 0
+  )
+}
+
+function teleportG4 () {
+  g4.animate({
+    top: g4.y * blockSize,
+    left: g4.x * blockSize
+  }, 0
+  )
 }
 
 /**
  * Animate the ghosts
  */
 function animateAllGhosts () {
-  animateg1()
-  animateg2()
-  animateg3()
-  animateg4()
-  checkCollision()
+  animateG1()
+  animateG2()
+  animateG3()
+  animateG4()
 }
 
 // #############################################################################
@@ -402,15 +451,172 @@ function movePacman () {
   }
 }
 
-/**
- * animatePacman but much faster
- */
-function teleportPacman () {
-  pacman.animate({
-    top: pacmanPos.y * blockSize,
-    left: pacmanPos.x * blockSize
-  }, 0
-  )
+function moveG1 () {
+  const originalY = g1Pos.y
+  const originalX = g1Pos.x
+  switch (g1Dir) {
+    case 'down':
+      g1Pos.y++
+      break
+    case 'up':
+      g1Pos.y--
+      break
+    case 'right':
+      g1Pos.x++
+      break
+    case 'left':
+      g1Pos.x--
+      break
+  }
+
+  // Boundary checks
+  if (g1Pos.x < 0) { // Out of Bounds: Left
+    g1Pos.x = M - 1
+    teleportG1()
+  } else if (g1Pos.x > M - 1) { // Out of Bounds: Right
+    g1Pos.x = 0
+    teleportG1()
+  } else if (g1Pos.y < 0) { // Out of Bounds: Up
+    g1Pos.y = N - 1
+    teleportG1()
+  } else if (g1Pos.y > N - 1) { // Out of Bounds: Down
+    g1Pos.y = 0
+    teleportG1()
+  } else if (isWall(g1Pos.y, g1Pos.x)) { // Wall hit
+    g1Pos.x = originalX
+    g1Pos.y = originalY
+    g1Dir = dirs[getRandomInt(0, 3)]
+  } else { // Move
+    animateG1()
+  }
+}
+
+function moveG2 () {
+  const originalY = g2Pos.y
+  const originalX = g2Pos.x
+  switch (g2Dir) {
+    case 'down':
+      g2Pos.y++
+      break
+    case 'up':
+      g2Pos.y--
+      break
+    case 'right':
+      g2Pos.x++
+      break
+    case 'left':
+      g2Pos.x--
+      break
+  }
+
+  // Boundary checks
+  if (g2Pos.x < 0) { // Out of Bounds: Left
+    g2Pos.x = M - 1
+    teleportG2()
+  } else if (g2Pos.x > M - 1) { // Out of Bounds: Right
+    g2Pos.x = 0
+    teleportG2()
+  } else if (g2Pos.y < 0) { // Out of Bounds: Up
+    g2Pos.y = N - 1
+    teleportG2()
+  } else if (g2Pos.y > N - 1) { // Out of Bounds: Down
+    g2Pos.y = 0
+    teleportG2()
+  } else if (isWall(g2Pos.y, g2Pos.x)) { // Wall hit
+    g2Pos.x = originalX
+    g2Pos.y = originalY
+    g2Dir = dirs[getRandomInt(0, 3)]
+  } else { // Move
+    animateG2()
+  }
+}
+
+function moveG3 () {
+  const originalY = g3Pos.y
+  const originalX = g3Pos.x
+  switch (g3Dir) {
+    case 'down':
+      g3Pos.y++
+      break
+    case 'up':
+      g3Pos.y--
+      break
+    case 'right':
+      g3Pos.x++
+      break
+    case 'left':
+      g3Pos.x--
+      break
+  }
+
+  // Boundary checks
+  if (g3Pos.x < 0) { // Out of Bounds: Left
+    g3Pos.x = M - 1
+    teleportG3()
+  } else if (g2Pos.x > M - 1) { // Out of Bounds: Right
+    g2Pos.x = 0
+    teleportG3()
+  } else if (g3Pos.y < 0) { // Out of Bounds: Up
+    g3Pos.y = N - 1
+    teleportG3()
+  } else if (g3Pos.y > N - 1) { // Out of Bounds: Down
+    g3Pos.y = 0
+    teleportG3()
+  } else if (isWall(g3Pos.y, g3Pos.x)) { // Wall hit
+    g3Pos.x = originalX
+    g3Pos.y = originalY
+    g3Dir = dirs[getRandomInt(0, 3)]
+  } else { // Move
+    animateG3()
+  }
+}
+
+function moveG4 () {
+  const originalY = g4Pos.y
+  const originalX = g4Pos.x
+  switch (g4Dir) {
+    case 'down':
+      g4Pos.y++
+      break
+    case 'up':
+      g4Pos.y--
+      break
+    case 'right':
+      g4Pos.x++
+      break
+    case 'left':
+      g4Pos.x--
+      break
+  }
+
+  // Boundary checks
+  if (g4Pos.x < 0) { // Out of Bounds: Left
+    g4Pos.x = M - 1
+    teleportG4()
+  } else if (g4Pos.x > M - 1) { // Out of Bounds: Right
+    g4Pos.x = 0
+    teleportG4()
+  } else if (g4Pos.y < 0) { // Out of Bounds: Up
+    g4Pos.y = N - 1
+    teleportG4()
+  } else if (g4Pos.y > N - 1) { // Out of Bounds: Down
+    g4Pos.y = 0
+    teleportG4()
+  } else if (isWall(g4Pos.y, g4Pos.x)) { // Wall hit
+    g4Pos.x = originalX
+    g4Pos.y = originalY
+    g4Dir = dirs[getRandomInt(0, 3)]
+  } else { // Move
+    animateG4()
+  }
+}
+
+function moveAllGhosts () {
+  moveG1()
+  moveG2()
+  moveG3()
+  moveG4()
+  checkCollision()
 }
 
 // #############################################################################
@@ -431,6 +637,7 @@ function showWin () {
   clearInterval(changeDirectionInterval)
   clearInterval(timerInterval)
   clearInterval(updateInterval)
+  clearInterval(moveGInterval)
 }
 
 /**
@@ -502,6 +709,23 @@ function resetPacman () {
   teleportPacman()
 }
 
+function resetGhosts () {
+  g1Pos.x = 9
+  g1Pos.y = 5
+  g2Pos.x = 10
+  g2Pos.y = 5
+  g3Pos.x = 9
+  g3Pos.y = 6
+  g4Pos.x = 10
+  g4Pos.y = 6
+}
+
+function getRandomInt (min, max) {
+  min = Math.ceil(min)
+  max = Math.floor(max)
+  return Math.floor(Math.random() * (max - min + 1)) + min
+}
+
 // #############################################################################
 
 /**
@@ -555,7 +779,8 @@ function main () {
 
   // Interval functions
   movePacmanInterval = setInterval(movePacman, 200) // for every 'timeout' ms, move
-  animateAllGhostsInterval = setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
+  moveGInterval = setInterval(moveAllGhosts, 200) // for every 'timeout' ms, move
+  // animateAllGhostsInterval = setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
   changeDirectionInterval = setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
   updateInterval = setInterval(update, 10)
   timerInterval = setInterval(function () { seconds++ }, 1000)
