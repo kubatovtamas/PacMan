@@ -40,18 +40,19 @@ DJ Isaac bitches
 
 
 1.  win condition:
+        showWin
         //test: win cond: 10 score
             //replace pac and ghost with peepoclap
             //stop intervals
         production: 131 score
-2.  ghost movement: move, if stuck, random direction, move ...
+    lose condition: 0 lives
+        showLose
+//2.  ghost movement: move, if stuck, random direction, move ...
 3.  on collision:
         //lives--,
         //pacman reset
-        ghosts reset position
+        //ghosts reset position
 4.  panic mode: on collision reverse, ghosts killed for 5 sec, score: killing gives points
 5.  actually have audio: background music
-
-+1 cosmetic: mirroring
 
 

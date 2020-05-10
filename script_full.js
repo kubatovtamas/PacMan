@@ -45,7 +45,7 @@ let g4Dir = 'right'
 let dir1 = ''
 let dir2 = ''
 let score = 0
-const winningScore = 50
+const winningScore = 131
 
 let mainMenu
 let gameArea
@@ -57,12 +57,14 @@ let timer
 
 let lives = 3
 let seconds = 0
+let panicMode = false
+let panicCount = 0
 
 let movePacmanInterval
-let animateAllGhostsInterval
 let changeDirectionInterval
 let updateInterval
 let timerInterval
+let song
 
 let moveGInterval
 // #############################################################################
@@ -116,6 +118,11 @@ function isWall (y, x) {
  * and set dir2 to empty string.
  */
 function changeDirection () {
+  if (panicMode) {
+    checkCollisionPanic()
+  } else {
+    checkCollision()
+  }
   if (dir1 !== dir2) {
     switch (dir2) {
       case 'down':
@@ -193,30 +200,61 @@ function setDirection (e) {
     case 'r':
       reset()
       break
-    case 'm':
-      showMain()
-      break
   }
 }
 
 function checkCollision () {
   gameArea.find('.ghost').each(function () {
     if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
+      playHit()
       lives--
+      if (lives === 0) {
+        showLose()
+      }
       resetPacman()
       resetGhosts()
     } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
+      playHit()
       lives--
+      if (lives === 0) {
+        showLose()
+      }
       resetPacman()
       resetGhosts()
     } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
+      playHit()
       lives--
+      if (lives === 0) {
+        showLose()
+      }
       resetPacman()
       resetGhosts()
     } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
+      playHit()
       lives--
+      if (lives === 0) {
+        showLose()
+      }
       resetPacman()
       resetGhosts()
+    }
+  })
+}
+
+function checkCollisionPanic () {
+  gameArea.find('.ghost').each(function () {
+    if (pacmanPos.y === g1Pos.y && pacmanPos.x === g1Pos.x) {
+      playHit()
+      resetG1()
+    } else if (pacmanPos.y === g2Pos.y && pacmanPos.x === g2Pos.x) {
+      playHit()
+      resetG2()
+    } else if (pacmanPos.y === g3Pos.y && pacmanPos.x === g3Pos.x) {
+      playHit()
+      resetG3()
+    } else if (pacmanPos.y === g4Pos.y && pacmanPos.x === g4Pos.x) {
+      playHit()
+      resetG4()
     }
   })
 }
@@ -237,7 +275,7 @@ function addPacman () {
 }
 
 function addG1 () {
-  g1 = $('<img src="juli.png" id="g1" />')
+  g1 = $('<img src="boomer.gif" id="g1" />')
   g1.css({
     width: blockSize,
     height: blockSize
@@ -247,7 +285,7 @@ function addG1 () {
 }
 
 function addG2 () {
-  g2 = $('<img src="juli.png" id="g2" />')
+  g2 = $('<img src="boomer.gif" id="g2" />')
   g2.css({
     width: blockSize,
     height: blockSize
@@ -257,7 +295,7 @@ function addG2 () {
 }
 
 function addG3 () {
-  g3 = $('<img src="juli.png" id="g3" />')
+  g3 = $('<img src="boomer.gif" id="g3" />')
   g3.css({
     width: blockSize,
     height: blockSize
@@ -267,7 +305,7 @@ function addG3 () {
 }
 
 function addG4 () {
-  g4 = $('<img src="juli.png" id="g4" />')
+  g4 = $('<img src="boomer.gif" id="g4" />')
   g4.css({
     width: blockSize,
     height: blockSize
@@ -309,14 +347,46 @@ function animatePacman () {
       ) {
         if ($(this).hasClass('normal')) {
           score++
+          // playCrunch()
           $(this).removeClass('normal')
         }
         if ($(this).hasClass('powerup')) {
           $(this).removeClass('powerup')
+          playPowerup()
+          setPanicMode()
         }
       }
     })
   })
+}
+
+function setPanicMode () {
+  panicMode = true
+  pacman.attr('src', 'reee.gif')
+  g1.attr('src', 'zoomer.png')
+  g2.attr('src', 'zoomer.png')
+  g3.attr('src', 'zoomer.png')
+  g4.attr('src', 'zoomer.png')
+  panicCount += 11
+  const counter = setInterval(timer, 1000)
+  function timer () {
+    panicCount--
+    console.log('panic: ' + panicCount)
+    if (panicCount <= 0) {
+      if (checkWin === true) {
+        showWin()
+      } else {
+        pacman.attr('src', 'pognom.gif')
+        g1.attr('src', 'boomer.gif')
+        g2.attr('src', 'boomer.gif')
+        g3.attr('src', 'boomer.gif')
+        g4.attr('src', 'boomer.gif')
+      }
+
+      panicMode = false
+      clearInterval(counter)
+    }
+  }
 }
 
 /**
@@ -334,60 +404,56 @@ function animateG1 () {
   g1.animate({
     top: g1Pos.y * blockSize,
     left: g1Pos.x * blockSize
-  }, 200)
+  }, 100)
 }
 
 function animateG2 () {
   g2.animate({
     top: g2Pos.y * blockSize,
     left: g2Pos.x * blockSize
-  }, 200)
+  }, 100)
 }
 
 function animateG3 () {
   g3.animate({
     top: g3Pos.y * blockSize,
     left: g3Pos.x * blockSize
-  }, 200)
+  }, 100)
 }
 
 function animateG4 () {
   g4.animate({
     top: g4Pos.y * blockSize,
     left: g4Pos.x * blockSize
-  }, 200)
+  }, 100)
 }
 
 function teleportG1 () {
   g1.animate({
     top: g1.y * blockSize,
     left: g1.x * blockSize
-  }, 0
-  )
+  }, 0)
 }
 
 function teleportG2 () {
   g2.animate({
     top: g2.y * blockSize,
     left: g2.x * blockSize
-  }, 0
-  )
+  }, 0)
 }
 
 function teleportG3 () {
   g3.animate({
     top: g3.y * blockSize,
     left: g3.x * blockSize
-  }, 0
-  )
+  }, 0)
 }
 
 function teleportG4 () {
   g4.animate({
     top: g4.y * blockSize,
     left: g4.x * blockSize
-  }, 0
-  )
+  }, 0)
 }
 
 /**
@@ -414,7 +480,6 @@ function animateAllGhosts () {
 function movePacman () {
   const originalY = pacmanPos.y
   const originalX = pacmanPos.x
-  console.log(dir1)
   switch (dir1) {
     case 'down':
       pacmanPos.y++
@@ -616,24 +681,31 @@ function moveAllGhosts () {
   moveG2()
   moveG3()
   moveG4()
-  checkCollision()
 }
 
 // #############################################################################
 
 function checkWin () {
+  // console.log('score:' + score)
+  // console.log('winning: ' + winningScore)
   return score >= winningScore
 }
 
 function showWin () {
-  console.log('WIN')
+  playWin()
   pacman.attr('src', 'clap.gif')
-  g1.attr('src', 'clap.gif')
-  g2.attr('src', 'clap.gif')
-  g3.attr('src', 'clap.gif')
-  g4.attr('src', 'clap.gif')
   clearInterval(movePacmanInterval)
-  clearInterval(animateAllGhostsInterval)
+  clearInterval(changeDirectionInterval)
+  clearInterval(timerInterval)
+  clearInterval(updateInterval)
+  clearInterval(moveGInterval)
+}
+
+function showLose () {
+  update()
+  playLose()
+  pacman.attr('src', 'sadspin.gif')
+  clearInterval(movePacmanInterval)
   clearInterval(changeDirectionInterval)
   clearInterval(timerInterval)
   clearInterval(updateInterval)
@@ -678,20 +750,29 @@ function storage () {
  */
 function showPlay () {
   if ($('#mainMenu').css('z-index') === '100') {
+    moveGInterval = setInterval(moveAllGhosts, 100)
+
     $('#mainMenu').css('z-index', 0)
-    console.log('start game')
+
+    song = new Audio('song.mp3')
+    song.volume = 0.5
+    song.addEventListener('ended', function () {
+      this.currentTime = 0
+      this.play()
+    }, false)
+    song.play()
   }
 }
 
 /**
  * From play -> main
  */
-function showMain () {
-  if ($('#mainMenu').css('z-index') === '0') {
-    $('#mainMenu').css('z-index', 100)
-    console.log('goto main')
-  }
-}
+// function showMain () {
+//   if ($('#mainMenu').css('z-index') === '0') {
+//     $('#mainMenu').css('z-index', 100)
+//     console.log('goto main')
+//   }
+// }
 
 /**
  * resets the game
@@ -709,15 +790,35 @@ function resetPacman () {
   teleportPacman()
 }
 
-function resetGhosts () {
+function resetG1 () {
   g1Pos.x = 9
   g1Pos.y = 5
+  teleportG1()
+}
+
+function resetG2 () {
   g2Pos.x = 10
   g2Pos.y = 5
+  teleportG2()
+}
+
+function resetG3 () {
   g3Pos.x = 9
   g3Pos.y = 6
+  teleportG3()
+}
+
+function resetG4 () {
   g4Pos.x = 10
   g4Pos.y = 6
+  teleportG4()
+}
+
+function resetGhosts () {
+  resetG1()
+  resetG2()
+  resetG3()
+  resetG4()
 }
 
 function getRandomInt (min, max) {
@@ -728,12 +829,32 @@ function getRandomInt (min, max) {
 
 // #############################################################################
 
+function playHit () {
+  new Audio('hit.mp3').play()
+}
+
+function playLose () {
+  song.pause()
+  new Audio('lose.mp3').play()
+}
+
+function playWin () {
+  song.pause()
+  new Audio('win.mp3').play()
+}
+
+function playPowerup () {
+  const powerup = new Audio('powerup.mp3')
+  powerup.volume = 0.2
+  powerup.play()
+}
+
 /**
  * Main driver
  */
 function main () {
   // Set up gameArea and scoreArea jQuery elements
-  mainMenu = $('<div><h1>MAIN MENU</h1><h2>CONTROLS: ARROW KEYS</h2><h2>M: MAIN</h2><h2>R: RESET</h2><h2>PRESS P TO PLAY</h2></div>')
+  mainMenu = $('<div><h1>MAIN MENU</h1><h2>CONTROLS: ARROW KEYS</h2><h2>R: RESET</h2><h2>PRESS P TO PLAY</h2></div>')
   gameArea = $('<div></div>')
   scoreArea = $('<div></div>')
 
@@ -743,11 +864,10 @@ function main () {
   mainMenu.find(':header').addClass('text')
 
   // Init functions
-
+  generateMap()
   addEverything()
   teleportPacman()
   animateAllGhosts()
-  generateMap()
 
   // Add gameArea to body
   gameArea.appendTo('body')
@@ -779,8 +899,6 @@ function main () {
 
   // Interval functions
   movePacmanInterval = setInterval(movePacman, 200) // for every 'timeout' ms, move
-  moveGInterval = setInterval(moveAllGhosts, 200) // for every 'timeout' ms, move
-  // animateAllGhostsInterval = setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
   changeDirectionInterval = setInterval(changeDirection, 20) // for every 'timeout' ms, check  if changing direction is valid
   updateInterval = setInterval(update, 10)
   timerInterval = setInterval(function () { seconds++ }, 1000)

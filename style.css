@@ -84,16 +84,16 @@ body {
     background: black;
 }
 
-.ghost {
-    background-image: url(juli.png);
-}
+/*.ghost {*/
+/*    background-image: url(boomer.gif);*/
+/*}*/
 
 .powerup {
     background-image: url("hotdeal.png");
 }
 
 .text {
-    margin: 75px 0;
+    margin: 90px 0;
     font-size: 25px;
     justify-content: center;
 }
