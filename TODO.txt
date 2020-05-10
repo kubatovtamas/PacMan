@@ -21,26 +21,18 @@ DJ Isaac bitches
 //6  Pickup detection:
     //on step: remove class (make it disappear)
 //7  count score
-display score
+//8display score
 
 
-
-
-
-
-  win condition:
-        number of .food in gameare == 0
-
-8.  have lives
-9.  create random moving ghosts
-10. if collision with ghost:
-        reset postion
-        life--
-11. make panic mode:
-        change behaviour of collision detection: reverse
-12. make scoring system
-13. print out the score
-14. have a highscore list
-15. background music
-16. make pog turn around/mirror
+//1. have lives
+//2. display lives
+//3. set timer
+//4. display timer
+//5. top score: local storage
+6. win condition: no more food: stop intervals update topscore
+7. ghost movement: move, if stuck, random direction, move ...
+8. on collision: lives--, everything reset position
+9. panic mode: on collision reverse, ghosts killed for 5 sec, score: killing gives points
+10. add bg music
++1 cosmetic: mirroring
 

@@ -22,11 +22,21 @@ const Map = [
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
 ]
-let gameArea
 let pacman
+
 let dir1 = ''
 let dir2 = ''
-let score = -1
+let score = 0
+
+let gameArea
+let scoreArea
+let currentScore
+let topScore
+let lifeScore
+let timer
+
+const lives = 3
+let seconds = 0
 
 /**
  * Generates the map for the gamearea
@@ -35,15 +45,16 @@ function generateMap () {
   for (let i = 0; i < N; i++) {
     for (let j = 0; j < M; j++) {
       const block = $('<div></div>')
-      block.addClass('normal')
-      if (Map[i][j] === 'wall') {
+      // block.addClass('normal')
+      block.addClass('nothing')
+      if (Map[i][j] === 'normal') {
+        block.addClass('normal')
+      } else if (Map[i][j] === 'wall') {
         block.addClass('wall')
       } else if (Map[i][j] === 'powerup') {
         block.addClass('powerup')
       } else if (Map[i][j] === 'ghost') {
         block.addClass('ghost')
-      } else if (Map[i][j] === 'nothing') {
-        block.addClass('nothing')
       }
 
       block.css({
@@ -234,34 +245,90 @@ function animatePacman () {
     top: pacmanPos.y * blockSize,
     left: pacmanPos.x * blockSize
   }, 200, function () {
-    gameArea.find('.normal').each(function () {
+    gameArea.find('.nothing').each(function () {
       if (
         $(this).css('top') === pacman.css('top') &&
         $(this).css('left') === pacman.css('left')
       ) {
-        score++
-        console.log('score: ' + score)
-        $(this).removeClass('normal')
-        $(this).removeClass('powerup')
-        $(this).addClass('nothing')
+        if ($(this).hasClass('normal')) {
+          score++
+          $(this).removeClass('normal')
+        }
+        if ($(this).hasClass('powerup')) {
+          $(this).removeClass('powerup')
+        }
       }
     })
   })
+}
+
+function update () {
+  storage()
+  $('#currentScore').text('score: ' + score)
+  $('#timer').text('Time: ' + seconds)
+  $('#topScore').text('TOP: ' + localStorage.getItem('topScore'))
+  $('#lifeScore').text('Lives: ' + lives)
+}
+
+function storage () {
+  if (typeof (Storage) !== 'undefined') {
+    if (localStorage.getItem('topScore')) {
+      if (Number(localStorage.getItem('topScore')) < score) {
+        localStorage.setItem('topScore', Number(score))
+      }
+    } else {
+      localStorage.setItem('topScore', Number(0))
+    }
+  }
 }
 
 /**
  * Main driver
  */
 $(function () {
+  // Set up gameArea and scoreArea jQuery elements
   gameArea = $('<div></div>')
-  gameArea.appendTo('body')
-  gameArea.attr('id', 'gamearea')
+  scoreArea = $('<div></div>')
 
+  // Init functions
   addPacman()
   teleportPacman()
   generateMap()
 
+  // Add gameArea to body
+  gameArea.appendTo('body')
+  gameArea.attr('id', 'gamearea')
+
+  // Add scoreArea to gameArea
+  scoreArea.appendTo('#gamearea')
+  scoreArea.attr('id', 'scorearea')
+
+  // Add currentScore to scoreArea
+  currentScore = $('<p></p>')
+  currentScore.appendTo('#scorearea')
+  currentScore.attr('id', 'currentScore')
+
+  // Add topScore to scoreArea
+  topScore = $('<p></p>')
+  topScore.appendTo('#scorearea')
+  topScore.attr('id', 'topScore')
+
+  // Add lives to scoreArea
+  lifeScore = $('<p></p>')
+  lifeScore.appendTo('#scorearea')
+  lifeScore.attr('id', 'lifeScore')
+
+  // Add timer to scoreArea
+  timer = $('<p></p>')
+  timer.appendTo('#scorearea')
+  timer.attr('id', 'timer')
+
+  // Interval functions
   setInterval(movePacman, 200) // for every 'timeout' ms, move
   setInterval(changeDirection, 50) // for every 'timeout' ms, check  if changing direction is valid
+  setInterval(update, 10)
+  setInterval(function () { seconds++ }, 1000)
+
+  // Keydown listener
   $(window).on('keydown', setDirection) // on keydown, call setDirection
 })
