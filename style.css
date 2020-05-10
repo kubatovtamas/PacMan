@@ -61,6 +61,11 @@ body {
     position: absolute;
 }
 
+#g1, #g2, #g3, #g4 {
+    z-index: 1;
+    position: absolute;
+}
+
 .nothing {
     background: lightgrey;
     position: absolute;

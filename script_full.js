@@ -12,8 +12,8 @@ const Map = [
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'normal', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
-  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
-  ['nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'ghost', 'ghost', 'nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'nothing'],
+  ['wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'nothing', /* 'ghost', 'ghost', */'nothing', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall', 'normal', 'wall'],
+  ['nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'wall', 'nothing', /* 'ghost', 'ghost', */'nothing', 'nothing', 'normal', 'wall', 'normal', 'normal', 'normal', 'wall', 'normal', 'nothing'],
   ['wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'wall', 'normal', 'wall', 'normal', 'wall', 'wall', 'wall', 'normal', 'wall'],
   ['wall', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'nothing', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'wall'],
   ['wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall', 'normal', 'wall', 'wall'],
@@ -22,7 +22,16 @@ const Map = [
   ['wall', 'powerup', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'normal', 'powerup', 'wall'],
   ['wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'nothing', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall', 'wall']
 ]
+
 let pacman
+let g1
+const g1Pos = { x: 9, y: 5 }
+let g2
+const g2Pos = { x: 10, y: 5 }
+let g3
+const g3Pos = { x: 9, y: 6 }
+let g4
+const g4Pos = { x: 10, y: 6 }
 
 let dir1 = ''
 let dir2 = ''
@@ -68,19 +77,6 @@ function generateMap () {
       block.appendTo(gameArea)
     }
   }
-}
-
-/**
- * Add the player model to the gamearea
- */
-function addPacman () {
-  pacman = $('<img src="pognom.gif" id="pacman" />')
-  pacman.css({
-    width: blockSize,
-    height: blockSize
-  })
-
-  pacman.appendTo(gameArea)
 }
 
 /**
@@ -185,6 +181,138 @@ function setDirection (e) {
 }
 
 /**
+ * Add the player model to the gamearea
+ */
+function addPacman () {
+  pacman = $('<img src="pognom.gif" id="pacman" />')
+  pacman.css({
+    width: blockSize,
+    height: blockSize
+  })
+
+  pacman.appendTo(gameArea)
+}
+
+function addG1 () {
+  g1 = $('<img src="juli.png" id="g1" />')
+  g1.css({
+    width: blockSize,
+    height: blockSize
+  })
+
+  g1.appendTo(gameArea)
+}
+
+function addG2 () {
+  g2 = $('<img src="juli.png" id="g2" />')
+  g2.css({
+    width: blockSize,
+    height: blockSize
+  })
+
+  g2.appendTo(gameArea)
+}
+
+function addG3 () {
+  g3 = $('<img src="juli.png" id="g3" />')
+  g3.css({
+    width: blockSize,
+    height: blockSize
+  })
+
+  g3.appendTo(gameArea)
+}
+
+function addG4 () {
+  g4 = $('<img src="juli.png" id="g4" />')
+  g4.css({
+    width: blockSize,
+    height: blockSize
+  })
+
+  g4.appendTo(gameArea)
+}
+
+/**
+ * Add the 4 ghosts to the gamearea
+ */
+function addAllGhosts () {
+  addG1()
+  addG2()
+  addG3()
+  addG4()
+}
+
+function addEverything () {
+  addPacman()
+  addAllGhosts()
+}
+
+/**
+ * Render the moving of the player
+ * to the gamearea.
+ */
+function animatePacman () {
+  pacman.animate({
+    top: pacmanPos.y * blockSize,
+    left: pacmanPos.x * blockSize
+  }, 200, function () {
+    gameArea.find('.nothing').each(function () {
+      if (
+        $(this).css('top') === pacman.css('top') &&
+        $(this).css('left') === pacman.css('left')
+      ) {
+        if ($(this).hasClass('normal')) {
+          score++
+          $(this).removeClass('normal')
+        }
+        if ($(this).hasClass('powerup')) {
+          $(this).removeClass('powerup')
+        }
+      }
+    })
+  })
+}
+
+function animateg1 () {
+  g1.animate({
+    top: g1Pos.y * blockSize,
+    left: g1Pos.x * blockSize
+  }, 0)
+}
+
+function animateg2 () {
+  g2.animate({
+    top: g2Pos.y * blockSize,
+    left: g2Pos.x * blockSize
+  }, 0)
+}
+
+function animateg3 () {
+  g3.animate({
+    top: g3Pos.y * blockSize,
+    left: g3Pos.x * blockSize
+  }, 0)
+}
+
+function animateg4 () {
+  g4.animate({
+    top: g4Pos.y * blockSize,
+    left: g4Pos.x * blockSize
+  }, 0)
+}
+
+/**
+ * Animate the ghosts
+ */
+function animateAllGhosts () {
+  animateg1()
+  animateg2()
+  animateg3()
+  animateg4()
+}
+
+/**
  * Supposed to be called in intervals!
  * Tries to move the player
  * depending on the state of
@@ -234,8 +362,7 @@ function movePacman () {
 }
 
 /**
- * Same as animatePacman
- * but much faster
+ * animatePacman but much faster
  */
 function teleportPacman () {
   pacman.animate({
@@ -243,32 +370,6 @@ function teleportPacman () {
     left: pacmanPos.x * blockSize
   }, 0
   )
-}
-
-/**
- * Render the moving of the player
- * to the gamearea.
- */
-function animatePacman () {
-  pacman.animate({
-    top: pacmanPos.y * blockSize,
-    left: pacmanPos.x * blockSize
-  }, 200, function () {
-    gameArea.find('.nothing').each(function () {
-      if (
-        $(this).css('top') === pacman.css('top') &&
-        $(this).css('left') === pacman.css('left')
-      ) {
-        if ($(this).hasClass('normal')) {
-          score++
-          $(this).removeClass('normal')
-        }
-        if ($(this).hasClass('powerup')) {
-          $(this).removeClass('powerup')
-        }
-      }
-    })
-  })
 }
 
 /**
@@ -319,6 +420,9 @@ function showMain () {
   }
 }
 
+/**
+ * Reset pacman position
+ */
 function resetPacman () {
   pacmanPos.y = 8
   pacmanPos.x = 9
@@ -348,8 +452,10 @@ function main () {
   mainMenu.find(':header').addClass('text')
 
   // Init functions
-  addPacman()
+
+  addEverything()
   teleportPacman()
+  animateAllGhosts()
   generateMap()
 
   // Add gameArea to body
@@ -382,6 +488,7 @@ function main () {
 
   // Interval functions
   setInterval(movePacman, 200) // for every 'timeout' ms, move
+  setInterval(animateAllGhosts, 200) // for every 'timeout' ms, move
   setInterval(changeDirection, 50) // for every 'timeout' ms, check  if changing direction is valid
   setInterval(update, 10)
   setInterval(function () { seconds++ }, 1000)
