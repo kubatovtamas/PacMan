@@ -29,10 +29,19 @@ DJ Isaac bitches
 //3. set timer
 //4. display timer
 //5. top score: local storage
+//1.  display main menu
+//    display controls
+//2.  have a play button (start audio) -> P
+3.  actually have audio
+4.  win condition: 131 points
+
 6. win condition: no more food: stop intervals update topscore
 7. ghost movement: move, if stuck, random direction, move ...
 8. on collision: lives--, everything reset position
 9. panic mode: on collision reverse, ghosts killed for 5 sec, score: killing gives points
 10. add bg music
+
+
 +1 cosmetic: mirroring
+
 

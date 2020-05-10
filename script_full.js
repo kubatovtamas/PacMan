@@ -28,6 +28,7 @@ let dir1 = ''
 let dir2 = ''
 let score = 0
 
+let mainMenu
 let gameArea
 let scoreArea
 let currentScore
@@ -172,6 +173,15 @@ function setDirection (e) {
       }
       dir1 = 'left'
       break
+    case 'p':
+      showPlay()
+      break
+    case 'r':
+      reset()
+      break
+    case 'm':
+      showMain()
+      break
   }
 }
 
@@ -262,6 +272,10 @@ function animatePacman () {
   })
 }
 
+/**
+ * Updates the current score, timer, top score, and lives fields.
+ * Handles localStorage calling for top score
+ */
 function update () {
   storage()
   $('#currentScore').text('score: ' + score)
@@ -270,6 +284,10 @@ function update () {
   $('#lifeScore').text('Lives: ' + lives)
 }
 
+/**
+ * Check if localStorage has a topScore, by default 0.
+ * Set top score to current score if needed
+ */
 function storage () {
   if (typeof (Storage) !== 'undefined') {
     if (localStorage.getItem('topScore')) {
@@ -283,12 +301,46 @@ function storage () {
 }
 
 /**
+ * From main -> play
+ */
+function showPlay () {
+  if ($('#mainMenu').css('z-index') === '100') {
+    $('#mainMenu').css('z-index', 0)
+    console.log('start game')
+  }
+}
+
+/**
+ * From play -> main
+ */
+function showMain () {
+  if ($('#mainMenu').css('z-index') === '0') {
+    $('#mainMenu').css('z-index', 100)
+    console.log('goto main')
+  }
+}
+
+/**
+ * resets the game
+ */
+function reset () {
+  console.log('RESET')
+}
+
+/**
  * Main driver
  */
 $(function () {
   // Set up gameArea and scoreArea jQuery elements
+  mainMenu = $('<div><h1>MAIN MENU</h1><h2>CONTROLS: ARROW KEYS</h2><h2>M: MAIN</h2><h2>R: RESET</h2><h2>PRESS P TO PLAY</h2></div>')
   gameArea = $('<div></div>')
   scoreArea = $('<div></div>')
+
+  // Add mainMenu to body
+  mainMenu.appendTo('body')
+  mainMenu.attr('id', 'mainMenu')
+  // mainMenu.addClass('visible')
+  mainMenu.find(':header').addClass('text')
 
   // Init functions
   addPacman()

@@ -11,6 +11,27 @@ body {
     background: black;
 }
 
+#mainMenu {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-left: -400px;
+    margin-top: -300px;
+    width: 800px;
+    height: 600px;
+    background-color: #AAA;
+    color: black;
+
+    display: block;
+    z-index: 100;
+
+    text-align: center;
+
+    font-family: 'Aldrich', sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+}
+
 #gamearea {
     position: absolute;
     top: 50%;
@@ -20,6 +41,7 @@ body {
     width: 800px;
     height: 600px;
     border: none;
+    z-index: 5;
 }
 
 #scorearea {
@@ -43,7 +65,7 @@ body {
     background: lightgrey;
     position: absolute;
     z-index: 0;
-    border: solid #666 1px;
+    /*border: solid #666 1px;*/
     background-image: none;
 }
 
@@ -63,6 +85,12 @@ body {
 
 .powerup {
     background-image: url("hotdeal.png");
+}
+
+.text {
+    margin: 75px 0;
+    font-size: 25px;
+    justify-content: center;
 }
 
 
